@@ -95,7 +95,7 @@ function viewEmployees() {
     var query = 'SELECT * FROM employee';
     connection.query(query, function(err, res) {
         if (err) throw err;
-        console.log(res.length + ' employees found!');
+        console.log(res.length + ' employees');
         console.table('All Employees:', res); 
         options();
     })
@@ -136,12 +136,12 @@ function addRole() {
             {
                 name: 'newRole',
                 type: 'input', 
-                message: "What new role would you like to add?"
+                message: "What is the name of new role you would like to add?"
             },
             {
                 name: 'salary',
                 type: 'input',
-                message: 'What is the salary of this role? (Enter a number)'
+                message: 'What is the salary of the new role?'
             },
             {
                 name: 'Department',
@@ -171,7 +171,7 @@ function addRole() {
                 },
                 function (err, res) {
                     if(err)throw err;
-                    console.log('Your new role has been added!');
+                    console.log('You have successfully added a new role!');
                     console.table('All Roles:', res);
                     options();
                 })
