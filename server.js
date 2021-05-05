@@ -14,11 +14,11 @@ const connection = mysql.createConnection({
 //Connects to SQL database
 connection.connect(err => {
     if (err) throw err;
-    prompt();
+    beginPrompt();
 });
 
 // User prompts
-function prompt() {
+function beginPrompt() {
         inquirer
             .prompt({
                 name: 'action',
@@ -64,8 +64,8 @@ function prompt() {
                         case 'EXIT': 
                             exitApp();
                             break;
-                        default:
-                            break;
+                        /* default:
+                            break; */
                     }
             })
 };
@@ -76,7 +76,7 @@ function viewDepartments() {
     connection.query(query, function(err, res) {
         if(err)throw err;
         console.table('All Departments:', res);
-        options();
+        beginPrompt();
     })
 };
 
@@ -86,7 +86,7 @@ function viewRoles() {
     connection.query(query, function(err, res){
         if (err) throw err;
         console.table('All Roles:', res);
-        options();
+        beginPrompt();
     })
 };
 
@@ -97,7 +97,7 @@ function viewEmployees() {
         if (err) throw err;
         console.log(res.length + ' employees');
         console.table('All Employees:', res); 
-        options();
+        beginPrompt();
     })
 };
 
@@ -121,7 +121,7 @@ function addDepartment() {
                 if(err)throw err;
                 console.log('New department has been successfully added!');
                 console.table('All Departments:', res);
-                options();
+                beginPrompt();
                 })
             })
 };
@@ -136,7 +136,7 @@ function addRole() {
             {
                 name: 'newRole',
                 type: 'input', 
-                message: "What is the name of new role you would like to add?"
+                message: "What new role would like to add?"
             },
             {
                 name: 'salary',
@@ -173,7 +173,7 @@ function addRole() {
                     if(err)throw err;
                     console.log('You have successfully added a new role!');
                     console.table('All Roles:', res);
-                    options();
+                    beginPrompt();
                 })
         })
     })
@@ -188,12 +188,12 @@ function addEmployee() {
                 {
                     name: 'first_name',
                     type: 'input', 
-                    message: "What is the employee's fist name? ",
+                    message: "First name: ",
                 },
                 {
                     name: 'last_name',
                     type: 'input', 
-                    message: "What is the employee's last name? "
+                    message: "Last name: "
                 },
                 {
                     name: 'manager_id',
@@ -210,7 +210,7 @@ function addEmployee() {
                     }
                     return roleArray;
                     },
-                    message: "What is this employee's role? "
+                    message: "What is the role of the employee? "
                 }
                 ]).then(function (answer) {
                     let role_id;
@@ -230,9 +230,64 @@ function addEmployee() {
                     },
                     function (err) {
                         if (err) throw err;
-                        console.log('Your employee has been added!');
-                        options();
+                        console.log('Employee has been added!');
+                        beginPrompt();
                     })
                 })
         })
+};
+
+//Update Employee
+function updateRole() {
+    connection.query("SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;", function(err, res) {
+    // console.log(res)
+     if (err) throw err
+     console.log(res)
+    inquirer.prompt([
+          {
+            name: "lastName",
+            type: "rawlist",
+            choices: function() {
+              var lastName = [];
+              for (var i = 0; i < res.length; i++) {
+                lastName.push(res[i].last_name);
+              }
+              return lastName;
+            },
+            message: "What is the Employee's last name? ",
+          },
+          {
+            name: "role",
+            type: "rawlist",
+            message: "What is the Employees new title? ",
+            choices: selectRole()
+          },
+      ]).then(function(val) {
+        var roleId = selectRole().indexOf(val.role) + 1
+        connection.query("UPDATE employee SET WHERE ?", 
+        {
+          last_name: val.lastName
+           
+        }, 
+        {
+          role_id: roleId
+           
+        }, 
+        function(err){
+            if (err) throw err
+            console.table(val)
+            beginPrompt()
+        })
+  
+    });
+  });
+
+  }
+
+
+
+
+// exit function
+function exitApp() {
+    connection.end();
 };
