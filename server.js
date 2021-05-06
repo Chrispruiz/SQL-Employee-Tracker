@@ -287,8 +287,8 @@ function updateRole() {
 
  //Update employee roles
 
- //Id prompt
-  function askId() {
+ //Id prompt for employee
+  function promptId() {
     return ([
         {
             name: "name",
@@ -298,9 +298,9 @@ function updateRole() {
     ]);
 }
 
-//Update the actual role
+//Update the role
 async function updateRole() {
-    const employeeId = await inquirer.prompt(askId());
+    const employeeId = await inquirer.prompt(promptId());
 
     connection.query('SELECT role.id, role.title FROM role ORDER BY role.id;', async (err, res) => {
         if (err) throw err;
@@ -327,6 +327,25 @@ async function updateRole() {
     });
 }
 
+//Delete employee
+function deleteEmployee() {
+    inquirer
+      .prompt({
+        name: "deleteEmployee",
+        type: "input",
+        message: "Please enter the ID of the employee you would like to remove:",
+  
+      })
+      .then(function (answer) {
+        console.log(answer);
+        var query = "DELETE FROM employee WHERE ?";
+        var newId = Number(answer.deleteEmployee);
+        console.log(newId);
+        connection.query(query, { id: newId }, function (err, res) {
+          beginPrompt();
+        });
+      });
+  }
 
 
 
