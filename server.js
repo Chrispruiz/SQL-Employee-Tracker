@@ -55,7 +55,7 @@ function beginPrompt() {
                         case 'Add an employee':
                             addEmployee();
                             break;
-                        case 'Update employee role':
+                        case 'Update an employee role':
                             updateRole();
                             break;
                         case 'Delete an employee':
@@ -240,7 +240,6 @@ function addEmployee() {
 //Update Employee
 function updateRole() {
     connection.query("SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;", function(err, res) {
-    // console.log(res)
      if (err) throw err
      console.log(res)
     inquirer.prompt([
@@ -283,6 +282,50 @@ function updateRole() {
   });
 
   }
+
+
+
+ //Update employee roles
+
+ //Id prompt
+  function askId() {
+    return ([
+        {
+            name: "name",
+            type: "input",
+            message: "What is the employee's ID?:  "
+        }
+    ]);
+}
+
+//Update the actual role
+async function updateRole() {
+    const employeeId = await inquirer.prompt(askId());
+
+    connection.query('SELECT role.id, role.title FROM role ORDER BY role.id;', async (err, res) => {
+        if (err) throw err;
+        const { role } = await inquirer.prompt([
+            {
+                name: 'role',
+                type: 'list',
+                choices: () => res.map(res => res.title),
+                message: 'What is the new role?: '
+            }
+        ]);
+        let roleId;
+        for (const row of res) {
+            if (row.title === role) {
+                roleId = row.id;
+                continue;
+            }
+        }
+        connection.query(`UPDATE employee SET role_id = ${roleId} WHERE employee.id = ${employeeId.name}`, async (err, res) => {
+            if (err) throw err;
+            console.log('Role has been successfully updated!')
+            beginPrompt();
+        });
+    });
+}
 
 
 
