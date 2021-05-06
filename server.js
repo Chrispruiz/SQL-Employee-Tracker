@@ -32,6 +32,7 @@ function beginPrompt() {
                         'Add a role',
                         'Add an employee',
                         'Update an employee role',
+                        'Delete a department',
                         'Delete an employee',
                         'EXIT'
                         ]
@@ -58,6 +59,8 @@ function beginPrompt() {
                         case 'Update an employee role':
                             updateRole();
                             break;
+                        case 'Delete a department':
+                            deleteDepartment();
                         case 'Delete an employee':
                             deleteEmployee();
                             break;
@@ -92,14 +95,13 @@ function viewRoles() {
 
 // view employees 
 function viewEmployees() {
-    var query = 'SELECT * FROM employee';
-    connection.query(query, function(err, res) {
-        if (err) throw err;
-        console.log(res.length + ' employees');
-        console.table('All Employees:', res); 
-        beginPrompt();
-    })
-};
+    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;", 
+    function(err, res) {
+      if (err) throw err
+      console.table(res)
+      beginPrompt()
+  })
+}
 
 // add a department 
 function addDepartment() {
@@ -281,7 +283,7 @@ function updateRole() {
     });
   });
 
-  }
+  };
 
 
 
@@ -296,7 +298,7 @@ function updateRole() {
             message: "What is the employee's ID?:  "
         }
     ]);
-}
+};
 
 //Update the role
 async function updateRole() {
@@ -325,7 +327,27 @@ async function updateRole() {
             beginPrompt();
         });
     });
-}
+};
+
+//Delete a department
+function deleteDepartment() {
+    inquirer
+      .prompt({
+        name: "deleteDepartment",
+        type: "input",
+        message: "Please enter the ID of the department you would like to remove:",
+  
+      })
+      .then(function (answer) {
+        console.log(answer);
+        var queryDept = "DELETE FROM department WHERE ?";
+        var newDeptId = Number(answer.deleteDepartment);
+        console.log(newDeptId);
+        connection.query(queryDept, { id: newDeptId }, function (err, res) {
+          beginPrompt();
+        });
+      });
+  }
 
 //Delete employee
 function deleteEmployee() {
