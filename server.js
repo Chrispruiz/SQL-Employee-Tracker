@@ -33,6 +33,7 @@ function beginPrompt() {
                         'Add an employee',
                         'Update an employee role',
                         'Delete a department',
+                        'Delete a role',
                         'Delete an employee',
                         'EXIT'
                         ]
@@ -61,14 +62,16 @@ function beginPrompt() {
                             break;
                         case 'Delete a department':
                             deleteDepartment();
+                            break;
+                        case 'Delete a role':
+                            deleteRole();
+                            break;
                         case 'Delete an employee':
                             deleteEmployee();
                             break;
                         case 'EXIT': 
                             exitApp();
                             break;
-                        /* default:
-                            break; */
                     }
             })
 };
@@ -170,12 +173,13 @@ function addRole() {
                     title: answer.new_role,
                     salary: answer.salary,
                     department_id: department_id
-                },
-                function (err, res) {
-                    if(err)throw err;
-                    console.log('You have successfully added a new role!');
-                    console.table('All Roles:', res);
-                    beginPrompt();
+                });
+                var query = 'SELECT * FROM role';
+                connection.query(query, function(err, res) {
+                if(err)throw err;
+                console.log('New role has been successfully added!');
+                console.table('All Roles:', res);
+                beginPrompt();
                 })
         })
     })
@@ -229,15 +233,18 @@ function addEmployee() {
                         last_name: answer.last_name,
                         manager_id: answer.manager_id,
                         role_id: role_id,
-                    },
-                    function (err) {
-                        if (err) throw err;
-                        console.log('Employee has been added!');
-                        beginPrompt();
+                    });
+                    var query = 'SELECT * FROM employee';
+                    connection.query(query, function(err, res) {
+                    if(err)throw err;
+                    console.log('New employee has been successfully added!');
+                    console.table('All Employees:', res);
+                    beginPrompt();
+                    })
                     })
                 })
-        })
-};
+        
+            };
 
 //Update Employee
 function updateRole() {
@@ -288,7 +295,6 @@ function updateRole() {
 
 
  //Update employee roles
-
  //Id prompt for employee
   function promptId() {
     return ([
@@ -335,7 +341,7 @@ function deleteDepartment() {
       .prompt({
         name: "deleteDepartment",
         type: "input",
-        message: "Please enter the ID of the department you would like to remove:",
+        message: "Please enter the ID of the department you would like to delete:",
   
       })
       .then(function (answer) {
@@ -349,13 +355,33 @@ function deleteDepartment() {
       });
   }
 
+//Delete a role
+function deleteRole() {
+    inquirer
+      .prompt({
+        name: "deleteRole",
+        type: "input",
+        message: "Please enter the ID of the role you would like to delete:",
+  
+      })
+      .then(function (answer) {
+        console.log(answer);
+        var queryRole = "DELETE FROM role WHERE ?";
+        var newRoleId = Number(answer.deleteRole);
+        console.log(newRoleId);
+        connection.query(queryRole, { id: newRoleId }, function (err, res) {
+          beginPrompt();
+        });
+      });
+  }
+
 //Delete employee
 function deleteEmployee() {
     inquirer
       .prompt({
         name: "deleteEmployee",
         type: "input",
-        message: "Please enter the ID of the employee you would like to remove:",
+        message: "Please enter the ID of the employee you would like to delete:",
   
       })
       .then(function (answer) {
