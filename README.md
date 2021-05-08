@@ -10,6 +10,8 @@
   ## Description: 
   This is a database that stores information on employees, roles, salaries, and departments. Users can view, add, update, and delete roles, departments, and employees. 
   For a more detailed demonstration, please click the video link in the [Usage](#usage) section.
+
+  
   ![Gif Demo](./assets/gif/EmployeeTracker.gif)
 
  ## Tools Used
@@ -31,7 +33,7 @@
       
   ## Usage:
   This database can be used to store data to keep track of a wide variety of data.
-  
+
   [View video for demonstration](https://drive.google.com/file/d/1FuLQhlquLoQTU7uRtnPTkEdE0MZ4ALZP/view)
 
   [GitHub Link](https://github.com/Chrispruiz/SQL-Employee-Tracker.git)
